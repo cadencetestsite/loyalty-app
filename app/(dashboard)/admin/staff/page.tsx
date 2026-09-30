@@ -38,7 +38,7 @@ export default function StaffPage() {
 
     const { data: staffData } = await supabase
       .from('staff')
-      .select('*, users:auth.users(email)')
+      .select('*')
       .eq('business_id', business.id)
 
     if (staffData) setStaff(staffData)

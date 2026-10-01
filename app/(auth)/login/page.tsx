@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
-
+    
     if (!user) {
       toast.error('Failed to get user')
       setLoading(false)
@@ -42,7 +42,7 @@ export default function LoginPage() {
       .from('businesses')
       .select('id')
       .eq('owner_id', user.id)
-      .maybeSingle() // Use maybeSingle instead of single to avoid errors
+      .maybeSingle()
 
     if (business) {
       router.push('/admin')

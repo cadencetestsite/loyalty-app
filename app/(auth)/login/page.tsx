@@ -28,34 +28,40 @@ export default function LoginPage() {
       return
     }
 
-    // Determine where to redirect based on role
+    // Get current user
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Check if admin
+    if (!user) {
+      toast.error('Failed to get user')
+      setLoading(false)
+      return
+    }
+
+    // Check if business owner FIRST (highest priority)
     const { data: business } = await supabase
       .from('businesses')
       .select('id')
-      .eq('owner_id', user?.id)
-      .single()
+      .eq('owner_id', user.id)
+      .maybeSingle() // Use maybeSingle instead of single to avoid errors
 
     if (business) {
       router.push('/admin')
       return
     }
 
-    // Check if staff
+    // Check if staff SECOND
     const { data: staff } = await supabase
       .from('staff')
       .select('id')
-      .eq('user_id', user?.id)
-      .single()
+      .eq('user_id', user.id)
+      .maybeSingle()
 
     if (staff) {
       router.push('/staff/scan')
       return
     }
 
-    // Default to customer
+    // Default to customer LAST
     router.push('/customer')
   }
 
@@ -77,7 +83,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black"
               />
             </div>
             <div>
@@ -90,7 +96,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black"
               />
             </div>
           </div>
